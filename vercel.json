@@ -8,5 +8,11 @@
   },
   "env": {
     "APPWRITE_ENDPOINT": "https://cloud.appwrite.io/v1"
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/check-tweets",
+      "schedule": "0 0 * * *"
+    }
+  ]
 }
