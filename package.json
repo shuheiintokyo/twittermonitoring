@@ -1,0 +1,19 @@
+{
+  "name": "eitangos-twitter-monitor",
+  "version": "1.0.0",
+  "description": "Monitor X/Twitter posts and sync vocabulary to Appwrite",
+  "main": "api/check-tweets.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["twitter", "appwrite", "vocabulary", "serverless"],
+  "author": "Shuhei Kinugasa",
+  "license": "MIT",
+  "dependencies": {
+    "node-appwrite": "^13.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
