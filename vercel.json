@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "functions": {
+    "api/check-tweets.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
+  "env": {
+    "APPWRITE_ENDPOINT": "https://cloud.appwrite.io/v1"
+  }
+}
