@@ -20,6 +20,7 @@ let lastTweetId = null;
 
 /**
  * Parse vocabulary from tweet text
+ * Supports multi-word English phrases followed by Japanese translation
  */
 function parseVocabulary(text) {
     // Remove URLs, mentions, hashtags
@@ -29,32 +30,37 @@ function parseVocabulary(text) {
         .replace(/#\w+/g, '')
         .trim();
     
-    // Try multiple patterns
-    const patterns = [
-        /^(.+?)\s+(.+)$/,           // "word 単語"
-        /^(.+?)[\s　]+(.+)$/,       // "word　単語" (full-width space)
-        /^(.+?)[　\s](.+)$/         // Various spaces
-    ];
+    // Find where Japanese starts (first Japanese character)
+    // Japanese character ranges:
+    // \u3040-\u309F: Hiragana (あいうえお)
+    // \u30A0-\u30FF: Katakana (アイウエオ)
+    // \u4E00-\u9FAF: Kanji (漢字)
+    const japaneseStartMatch = cleanText.match(/[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/);
     
-    for (const pattern of patterns) {
-        const match = cleanText.match(pattern);
-        if (match && match[1] && match[2]) {
-            // Check if we have both English-like and Japanese characters
-            const part1 = match[1].trim();
-            const part2 = match[2].trim();
-            
-            const hasEnglish = /[a-zA-Z]/.test(part1);
-            const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(part2);
-            
-            if (hasEnglish && hasJapanese) {
-                return {
-                    english: part1,
-                    japanese: part2
-                };
-            }
-        }
+    if (!japaneseStartMatch) {
+        console.log(`⚠️  No Japanese characters found in: "${cleanText}"`);
+        return null; // No Japanese found
     }
     
+    const japaneseStartIndex = japaneseStartMatch.index;
+    
+    // Split at the Japanese start point
+    const englishPart = cleanText.substring(0, japaneseStartIndex).trim();
+    const japanesePart = cleanText.substring(japaneseStartIndex).trim();
+    
+    // Validate we have both parts
+    const hasEnglish = /[a-zA-Z]/.test(englishPart);
+    const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(japanesePart);
+    
+    if (hasEnglish && hasJapanese && englishPart && japanesePart) {
+        console.log(`✅ Parsed: "${englishPart}" → "${japanesePart}"`);
+        return {
+            english: englishPart,
+            japanese: japanesePart
+        };
+    }
+    
+    console.log(`⚠️  Invalid format: english="${englishPart}", japanese="${japanesePart}"`);
     return null;
 }
 
@@ -135,6 +141,8 @@ module.exports = async (req, res) => {
         
         // Process each tweet
         for (const tweet of tweetsData.data) {
+            console.log(`\n📝 Processing tweet: "${tweet.text}"`);
+            
             const parsed = parseVocabulary(tweet.text);
             
             if (!parsed) {
