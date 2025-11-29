@@ -88,7 +88,7 @@ module.exports = async (req, res) => {
         }
         
         // Fetch latest tweets
-        const twitterUrl = `https://api.twitter.com/2/users/${CONFIG.twitterUserId}/tweets?max_results=15&tweet.fields=created_at`;
+        const twitterUrl = `https://api.twitter.com/2/users/${CONFIG.twitterUserId}/tweets?max_results=20&tweet.fields=created_at`;
         
         console.log('📡 Fetching tweets from Twitter...');
         const twitterResponse = await fetch(twitterUrl, {
